@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <random>
 
 class Ball
 {
@@ -12,9 +11,8 @@ class Ball
 	Ball(float x, float y, float width, float height);
 
 	void reset();
+	void serve();
 	void update(float dt);
+	sf::FloatRect bounds() const;
 	void render(sf::RenderWindow &window) const;
-
-  private:
-	static std::mt19937 &rng();
 };

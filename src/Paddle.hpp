@@ -11,5 +11,6 @@ class Paddle
 	Paddle(float x, float y, float width, float height);
 
 	void update(float dt);
+	sf::FloatRect bounds() const;
 	void render(sf::RenderWindow &window) const;
 };

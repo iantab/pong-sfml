@@ -1,5 +1,6 @@
 #include "Constants.hpp"
 #include "PongGame.hpp"
+#include "Random.hpp"
 #include <optional>
 
 constexpr float PADDLE_SPEED = 200.f;
@@ -52,12 +53,13 @@ void PongGame::handleEvents()
 			{
 				if (state == State::Start)
 				{
+					ball.serve();
 					state = State::Play;
 				}
 				else
 				{
-					state = State::Start;
 					ball.reset();
+					state = State::Start;
 				}
 			}
 		}
@@ -91,6 +93,33 @@ void PongGame::update(float dt)
 	if (state == State::Play)
 	{
 		ball.update(dt);
+
+		std::uniform_real_distribution<float> bounceDY(10.f, 150.f);
+
+		if (ball.bounds().findIntersection(player1.bounds()).has_value())
+		{
+			ball.dx = -ball.dx * 1.03f;
+			ball.x = player1.x + player1.width;
+			ball.dy = (ball.dy < 0 ? -1 : 1) * bounceDY(Random::rng());
+		}
+		if (ball.bounds().findIntersection(player2.bounds()).has_value())
+		{
+			ball.dx = -ball.dx * 1.03f;
+			ball.x = player2.x - ball.width;
+			ball.dy = (ball.dy < 0 ? -1 : 1) * bounceDY(Random::rng());
+		}
+
+		if (ball.y <= 0)
+		{
+			ball.y = 0;
+			ball.dy = -ball.dy;
+		}
+
+		if (ball.y + ball.height >= Constants::VIRTUAL_HEIGHT)
+		{
+			ball.y = Constants::VIRTUAL_HEIGHT - ball.height;
+			ball.dy = -ball.dy;
+		}
 	}
 
 	fpsFrames++;

@@ -12,6 +12,11 @@ void Paddle::update(float dt)
 	y = std::clamp(y, 0.f, Constants::VIRTUAL_HEIGHT - height);
 }
 
+sf::FloatRect Paddle::bounds() const
+{
+	return sf::FloatRect({x, y}, {width, height});
+}
+
 void Paddle::render(sf::RenderWindow &window) const
 {
 	sf::RectangleShape shape({width, height});

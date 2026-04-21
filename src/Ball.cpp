@@ -1,11 +1,6 @@
 #include "Ball.hpp"
 #include "Constants.hpp"
-
-std::mt19937 &Ball::rng()
-{
-	static std::mt19937 engine{std::random_device{}()};
-	return engine;
-}
+#include "Random.hpp"
 
 Ball::Ball(float x, float y, float width, float height) : x(x), y(y), width(width), height(height)
 {
@@ -15,15 +10,27 @@ void Ball::reset()
 {
 	x = Constants::VIRTUAL_WIDTH / 2.f - width / 2.f;
 	y = Constants::VIRTUAL_HEIGHT / 2.f - height / 2.f;
+	dx = 0.f;
+	dy = 0.f;
+}
+
+void Ball::serve()
+{
 	std::uniform_real_distribution<float> randDY(-50.f, 50.f);
-	dx = (rng()() % 2 == 0) ? 100.f : -100.f;
-	dy = randDY(rng());
+	std::bernoulli_distribution coin;
+	dx = coin(Random::rng()) ? 100.f : -100.f;
+	dy = randDY(Random::rng());
 }
 
 void Ball::update(float dt)
 {
 	x += dx * dt;
 	y += dy * dt;
+}
+
+sf::FloatRect Ball::bounds() const
+{
+	return sf::FloatRect({x, y}, {width, height});
 }
 
 void Ball::render(sf::RenderWindow &window) const
