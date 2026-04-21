@@ -183,16 +183,20 @@ int main()
 			case State::Start:
 				largeMessage.setString("Welcome to Pong!");
 				smallMessage.setString("Press Enter to begin");
-				largeMessage.setPosition({(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
-				smallMessage.setPosition({(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
+				largeMessage.setPosition(
+					{(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
+				smallMessage.setPosition(
+					{(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
 				window.draw(largeMessage);
 				window.draw(smallMessage);
 				break;
 			case State::Serve:
 				largeMessage.setString("Player " + std::to_string(servingPlayer) + "'s serve!");
 				smallMessage.setString("Press Enter to serve");
-				largeMessage.setPosition({(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
-				smallMessage.setPosition({(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
+				largeMessage.setPosition(
+					{(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
+				smallMessage.setPosition(
+					{(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
 				window.draw(largeMessage);
 				window.draw(smallMessage);
 				break;
