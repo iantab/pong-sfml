@@ -10,7 +10,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(pong src/main.cpp "src/Paddle.cpp" "src/Ball.cpp" "src/PongGame.cpp")
+add_executable(pong src/main.cpp "src/Paddle.cpp" "src/Ball.cpp")
 set_target_properties(pong PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 target_compile_features(pong PRIVATE cxx_std_17)
 target_link_libraries(pong PRIVATE SFML::Graphics)
