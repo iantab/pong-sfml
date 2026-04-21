@@ -1,12 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <optional>
+#include <random>
 
 constexpr unsigned VIRTUAL_WIDTH = 432;
 constexpr unsigned VIRTUAL_HEIGHT = 243;
 
 constexpr float PADDLE_SPEED = 200.f;
 constexpr float PADDLE_HEIGHT = 20.f;
+
+enum class GameState { Start, Play };
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode({ 1280u, 720u }), "Pong");
@@ -36,6 +39,22 @@ int main() {
 
 	float leftY = VIRTUAL_HEIGHT / 2.f - 10;
 	float rightY = VIRTUAL_HEIGHT / 2.f - 10;
+	float ballX = VIRTUAL_WIDTH / 2.f - 2;
+	float ballY = VIRTUAL_HEIGHT / 2.f - 2;
+	float ballDX = 0.f, ballDY = 0.f;
+
+	GameState state = GameState::Start;
+
+	std::mt19937 rng{ std::random_device{}() };
+	std::uniform_real_distribution<float> randDY(-50.f, 50.f);
+
+	auto resetBall = [&]() {
+		ballX = VIRTUAL_WIDTH / 2.f - 2;
+		ballY = VIRTUAL_HEIGHT / 2.f - 2;
+		ballDX = (rng() % 2 == 0) ? 100.f : -100.f;
+		ballDY = randDY(rng);
+		};
+	resetBall();
 
 	sf::Clock clock;
 
@@ -50,6 +69,15 @@ int main() {
 			if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
 				if (key->code == sf::Keyboard::Key::Escape) {
 					window.close();
+				}
+				if (key->code == sf::Keyboard::Key::Enter) {
+					if (state == GameState::Start) {
+						state = GameState::Play;
+					}
+					else {
+						state = GameState::Start;
+						resetBall();
+					}
 				}
 			}
 		}
@@ -67,10 +95,14 @@ int main() {
 		leftY = std::clamp(leftY, 0.f, VIRTUAL_HEIGHT - PADDLE_HEIGHT);
 		rightY = std::clamp(rightY, 0.f, VIRTUAL_HEIGHT - PADDLE_HEIGHT);
 
+		if (state == GameState::Play) {
+			ballX += ballDX * dt;
+			ballY += ballDY * dt;
+		}
+
 		leftPaddle.setPosition({ 10.f, leftY });
 		rightPaddle.setPosition({ VIRTUAL_WIDTH - 15.f, rightY });
-
-
+		ball.setPosition({ ballX, ballY });
 
 		window.clear(BG);
 		window.draw(leftPaddle);
