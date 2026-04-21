@@ -39,6 +39,9 @@ int main()
 		fpsText.setFillColor(sf::Color::Green);
 		fpsText.setPosition({5.f, 5.f});
 
+		sf::Text largeMessage(font, "", 16);
+		sf::Text smallMessage(font, "", 8);
+
 		Paddle player1(10.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f);
 		Paddle player2(Constants::VIRTUAL_WIDTH - 15.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f);
 		Ball ball(Constants::VIRTUAL_WIDTH / 2.f - 2, Constants::VIRTUAL_HEIGHT / 2.f - 2, 4.f, 4.f);
@@ -49,6 +52,7 @@ int main()
 		int fpsValue = 0;
 		int player1Score = 0;
 		int player2Score = 0;
+		int servingPlayer = 1;
 
 		auto handleEvents = [&] {
 			while (const std::optional event = window.pollEvent())
@@ -65,15 +69,17 @@ int main()
 					}
 					if (key->code == sf::Keyboard::Key::Enter)
 					{
-						if (state == State::Start || state == State::Serve)
+						switch (state)
 						{
-							ball.serve();
+						case State::Start:
+							state = State::Serve;
+							break;
+						case State::Serve:
+							ball.reset(servingPlayer);
 							state = State::Play;
-						}
-						else
-						{
-							ball.reset();
-							state = State::Start;
+							break;
+						case State::Play:
+							break;
 						}
 					}
 				}
@@ -138,13 +144,15 @@ int main()
 				if (ball.x < 0)
 				{
 					player2Score++;
-					ball.reset();
+					servingPlayer = 1;
+					ball.reset(servingPlayer);
 					state = State::Serve;
 				}
 				if (ball.x > Constants::VIRTUAL_WIDTH)
 				{
 					player1Score++;
-					ball.reset();
+					servingPlayer = 2;
+					ball.reset(servingPlayer);
 					state = State::Serve;
 				}
 			}
@@ -169,6 +177,29 @@ int main()
 			window.draw(scoreLeft);
 			window.draw(scoreRight);
 			window.draw(fpsText);
+
+			switch (state)
+			{
+			case State::Start:
+				largeMessage.setString("Welcome to Pong!");
+				smallMessage.setString("Press Enter to begin");
+				largeMessage.setPosition({(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
+				smallMessage.setPosition({(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
+				window.draw(largeMessage);
+				window.draw(smallMessage);
+				break;
+			case State::Serve:
+				largeMessage.setString("Player " + std::to_string(servingPlayer) + "'s serve!");
+				smallMessage.setString("Press Enter to serve");
+				largeMessage.setPosition({(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
+				smallMessage.setPosition({(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
+				window.draw(largeMessage);
+				window.draw(smallMessage);
+				break;
+			case State::Play:
+				break;
+			}
+
 			window.display();
 		};
 

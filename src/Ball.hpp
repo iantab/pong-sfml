@@ -10,7 +10,7 @@ class Ball
 
 	Ball(float x, float y, float width, float height);
 
-	void reset();
+	void reset(int servingPlayer);
 	void serve();
 	void update(float dt);
 	sf::FloatRect bounds() const;
