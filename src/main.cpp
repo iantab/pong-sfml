@@ -11,6 +11,7 @@
 enum class State
 {
 	Start,
+	Serve,
 	Play
 };
 
@@ -46,6 +47,8 @@ int main()
 		sf::Clock fpsClock;
 		int fpsFrames = 0;
 		int fpsValue = 0;
+		int player1Score = 0;
+		int player2Score = 0;
 
 		auto handleEvents = [&] {
 			while (const std::optional event = window.pollEvent())
@@ -62,7 +65,7 @@ int main()
 					}
 					if (key->code == sf::Keyboard::Key::Enter)
 					{
-						if (state == State::Start)
+						if (state == State::Start || state == State::Serve)
 						{
 							ball.serve();
 							state = State::Play;
@@ -131,6 +134,19 @@ int main()
 					ball.y = Constants::VIRTUAL_HEIGHT - ball.height;
 					ball.dy = -ball.dy;
 				}
+
+				if (ball.x < 0)
+				{
+					player2Score++;
+					ball.reset();
+					state = State::Serve;
+				}
+				if (ball.x > Constants::VIRTUAL_WIDTH)
+				{
+					player1Score++;
+					ball.reset();
+					state = State::Serve;
+				}
 			}
 
 			fpsFrames++;
@@ -148,6 +164,8 @@ int main()
 			player1.render(window);
 			player2.render(window);
 			ball.render(window);
+			scoreLeft.setString(std::to_string(player1Score));
+			scoreRight.setString(std::to_string(player2Score));
 			window.draw(scoreLeft);
 			window.draw(scoreRight);
 			window.draw(fpsText);
