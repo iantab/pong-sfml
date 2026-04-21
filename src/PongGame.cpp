@@ -1,3 +1,4 @@
+#include "Constants.hpp"
 #include "PongGame.hpp"
 #include <optional>
 
@@ -6,16 +7,19 @@ const sf::Color BG(40, 45, 52);
 
 PongGame::PongGame()
 	: window(sf::VideoMode({1280u, 720u}), "Pong"), font("assets/font.ttf"), scoreLeft(font, "0", 32),
-	  scoreRight(font, "0", 32), player1(10.f, VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f),
-	  player2(VIRTUAL_WIDTH - 15.f, VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f),
-	  ball(VIRTUAL_WIDTH / 2.f - 2, VIRTUAL_HEIGHT / 2.f - 2, 4.f, 4.f)
+	  scoreRight(font, "0", 32), fpsText(font, "FPS: 0", 8),
+	  player1(10.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f),
+	  player2(Constants::VIRTUAL_WIDTH - 15.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f),
+	  ball(Constants::VIRTUAL_WIDTH / 2.f - 2, Constants::VIRTUAL_HEIGHT / 2.f - 2, 4.f, 4.f)
 {
 	window.setVerticalSyncEnabled(true);
-	sf::View view(sf::FloatRect({0.f, 0.f}, {(float)VIRTUAL_WIDTH, (float)VIRTUAL_HEIGHT}));
+	sf::View view(sf::FloatRect({0.f, 0.f}, {Constants::VIRTUAL_WIDTH, Constants::VIRTUAL_HEIGHT}));
 	window.setView(view);
 	font.setSmooth(false);
-	scoreLeft.setPosition({VIRTUAL_WIDTH / 2.f - 50, 30.f});
-	scoreRight.setPosition({VIRTUAL_WIDTH / 2.f + 30, 30.f});
+	scoreLeft.setPosition({Constants::VIRTUAL_WIDTH / 2.f - 50, 30.f});
+	scoreRight.setPosition({Constants::VIRTUAL_WIDTH / 2.f + 30, 30.f});
+	fpsText.setFillColor(sf::Color::Green);
+	fpsText.setPosition({5.f, 5.f});
 }
 
 void PongGame::run()
@@ -88,6 +92,15 @@ void PongGame::update(float dt)
 	{
 		ball.update(dt);
 	}
+
+	fpsFrames++;
+	if (fpsClock.getElapsedTime().asSeconds() >= 1.f)
+	{
+		fpsValue = fpsFrames;
+		fpsFrames = 0;
+		fpsClock.restart();
+		fpsText.setString("FPS: " + std::to_string(fpsValue));
+	}
 }
 
 void PongGame::draw()
@@ -98,5 +111,6 @@ void PongGame::draw()
 	ball.render(window);
 	window.draw(scoreLeft);
 	window.draw(scoreRight);
+	window.draw(fpsText);
 	window.display();
 }

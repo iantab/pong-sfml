@@ -1,14 +1,12 @@
 #pragma once
 #include "Ball.hpp"
+#include "Constants.hpp"
 #include "Paddle.hpp"
 #include <SFML/Graphics.hpp>
 
 class PongGame
 {
   public:
-	static constexpr unsigned VIRTUAL_WIDTH = 432;
-	static constexpr unsigned VIRTUAL_HEIGHT = 243;
-
 	PongGame();
 	void run();
 
@@ -25,11 +23,15 @@ class PongGame
 
 	sf::RenderWindow window;
 	sf::Font font;
-	sf::Text scoreLeft, scoreRight;
+	sf::Text scoreLeft, scoreRight, fpsText;
 
 	Paddle player1, player2;
 
 	Ball ball;
 
 	State state = State::Start;
+
+	sf::Clock fpsClock;
+	int fpsFrames = 0;
+	int fpsValue = 0;
 };

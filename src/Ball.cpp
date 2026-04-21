@@ -1,7 +1,5 @@
 #include "Ball.hpp"
-
-constexpr unsigned VIRTUAL_WIDTH = 432;
-constexpr unsigned VIRTUAL_HEIGHT = 243;
+#include "Constants.hpp"
 
 std::mt19937 &Ball::rng()
 {
@@ -15,9 +13,8 @@ Ball::Ball(float x, float y, float width, float height) : x(x), y(y), width(widt
 
 void Ball::reset()
 {
-	x = VIRTUAL_WIDTH / 2.f - width / 2.f;
-	x = VIRTUAL_WIDTH / 2.f - width / 2.f;
-	y = VIRTUAL_HEIGHT / 2.f - height / 2.f;
+	x = Constants::VIRTUAL_WIDTH / 2.f - width / 2.f;
+	y = Constants::VIRTUAL_HEIGHT / 2.f - height / 2.f;
 	std::uniform_real_distribution<float> randDY(-50.f, 50.f);
 	dx = (rng()() % 2 == 0) ? 100.f : -100.f;
 	dy = randDY(rng());
