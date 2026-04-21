@@ -1,8 +1,12 @@
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <optional>
 
 constexpr unsigned VIRTUAL_WIDTH = 432;
 constexpr unsigned VIRTUAL_HEIGHT = 243;
+
+constexpr float PADDLE_SPEED = 200.f;
+constexpr float PADDLE_HEIGHT = 20.f;
 
 int main() {
 	sf::RenderWindow window(sf::VideoMode({ 1280u, 720u }), "Pong");
@@ -30,7 +34,15 @@ int main() {
 	sf::RectangleShape ball({ 4.f, 4.f });
 	ball.setPosition({ VIRTUAL_WIDTH / 2.f - 2, VIRTUAL_HEIGHT / 2.f - 2 });
 
+	float leftY = VIRTUAL_HEIGHT / 2.f - 10;
+	float rightY = VIRTUAL_HEIGHT / 2.f - 10;
+
+	sf::Clock clock;
+
 	while (window.isOpen()) {
+
+		const float dt = clock.restart().asSeconds();
+
 		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) {
 				window.close();
@@ -41,6 +53,25 @@ int main() {
 				}
 			}
 		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) {
+			leftY -= PADDLE_SPEED * dt;
+		} if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) {
+			leftY += PADDLE_SPEED * dt;
+		} if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+			rightY -= PADDLE_SPEED * dt;
+		} if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+			rightY += PADDLE_SPEED * dt;
+		}
+
+		leftY = std::clamp(leftY, 0.f, VIRTUAL_HEIGHT - PADDLE_HEIGHT);
+		rightY = std::clamp(rightY, 0.f, VIRTUAL_HEIGHT - PADDLE_HEIGHT);
+
+		leftPaddle.setPosition({ 10.f, leftY });
+		rightPaddle.setPosition({ VIRTUAL_WIDTH - 15.f, rightY });
+
+
+
 		window.clear(BG);
 		window.draw(leftPaddle);
 		window.draw(rightPaddle);
