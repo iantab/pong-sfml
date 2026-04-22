@@ -3,6 +3,7 @@
 #include "Paddle.hpp"
 #include "Player.hpp"
 #include "Random.hpp"
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <optional>
@@ -43,6 +44,10 @@ int main()
 
 		sf::Text largeMessage(font, "", 16);
 		sf::Text smallMessage(font, "", 8);
+
+		sf::SoundBuffer paddleHitBuf("assets/paddle_hit.wav"), wallHitBuf("assets/wall_hit.wav"),
+			scoreBuf("assets/score.wav");
+		sf::Sound paddleHit(paddleHitBuf), wallHit(wallHitBuf), score(scoreBuf);
 
 		Paddle player1(10.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f);
 		Paddle player2(Constants::VIRTUAL_WIDTH - 15.f, Constants::VIRTUAL_HEIGHT / 2.f - 10, 5.f, 20.f);
@@ -131,29 +136,34 @@ int main()
 					ball.dx = -ball.dx * 1.03f;
 					ball.x = player1.x + player1.width;
 					ball.dy = (ball.dy < 0 ? -1 : 1) * bounceDY(Random::rng());
+					paddleHit.play();
 				}
 				if (ball.bounds().findIntersection(player2.bounds()).has_value())
 				{
 					ball.dx = -ball.dx * 1.03f;
 					ball.x = player2.x - ball.width;
 					ball.dy = (ball.dy < 0 ? -1 : 1) * bounceDY(Random::rng());
+					paddleHit.play();
 				}
 
 				if (ball.y <= 0)
 				{
 					ball.y = 0;
 					ball.dy = -ball.dy;
+					wallHit.play();
 				}
 
 				if (ball.y + ball.height >= Constants::VIRTUAL_HEIGHT)
 				{
 					ball.y = Constants::VIRTUAL_HEIGHT - ball.height;
 					ball.dy = -ball.dy;
+					wallHit.play();
 				}
 
 				if (ball.x < 0)
 				{
 					player2Score++;
+					score.play();
 					if (player2Score == Constants::WIN_SCORE)
 					{
 						winningPlayer = Player::Two;
@@ -170,6 +180,7 @@ int main()
 				{
 
 					player1Score++;
+					score.play();
 					if (player1Score == Constants::WIN_SCORE)
 					{
 						winningPlayer = Player::One;
