@@ -1,4 +1,5 @@
 #pragma once
+#include "Player.hpp"
 #include <SFML/Graphics.hpp>
 
 class Ball
@@ -10,7 +11,7 @@ class Ball
 
 	Ball(float x, float y, float width, float height);
 
-	void reset(int servingPlayer);
+	void reset(Player servingPlayer);
 	void serve();
 	void update(float dt);
 	sf::FloatRect bounds() const;

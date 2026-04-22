@@ -1,6 +1,7 @@
 #include "Ball.hpp"
 #include "Constants.hpp"
 #include "Paddle.hpp"
+#include "Player.hpp"
 #include "Random.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -12,7 +13,8 @@ enum class State
 {
 	Start,
 	Serve,
-	Play
+	Play,
+	Done
 };
 
 int main()
@@ -52,7 +54,8 @@ int main()
 		int fpsValue = 0;
 		int player1Score = 0;
 		int player2Score = 0;
-		int servingPlayer = 1;
+		Player servingPlayer = Player::One;
+		Player winningPlayer = Player::Neither;
 
 		auto handleEvents = [&] {
 			while (const std::optional event = window.pollEvent())
@@ -79,6 +82,13 @@ int main()
 							state = State::Play;
 							break;
 						case State::Play:
+							break;
+						case State::Done:
+							state = State::Serve;
+							player1Score = 0;
+							player2Score = 0;
+							servingPlayer = (winningPlayer == Player::One) ? Player::Two : Player::One;
+							ball.reset(servingPlayer);
 							break;
 						}
 					}
@@ -144,16 +154,33 @@ int main()
 				if (ball.x < 0)
 				{
 					player2Score++;
-					servingPlayer = 1;
-					ball.reset(servingPlayer);
-					state = State::Serve;
+					if (player2Score == Constants::WIN_SCORE)
+					{
+						winningPlayer = Player::Two;
+						state = State::Done;
+					}
+					else
+					{
+						servingPlayer = Player::One;
+						ball.reset(servingPlayer);
+						state = State::Serve;
+					}
 				}
 				if (ball.x > Constants::VIRTUAL_WIDTH)
 				{
+
 					player1Score++;
-					servingPlayer = 2;
-					ball.reset(servingPlayer);
-					state = State::Serve;
+					if (player1Score == Constants::WIN_SCORE)
+					{
+						winningPlayer = Player::One;
+						state = State::Done;
+					}
+					else
+					{
+						servingPlayer = Player::Two;
+						ball.reset(servingPlayer);
+						state = State::Serve;
+					}
 				}
 			}
 
@@ -178,32 +205,34 @@ int main()
 			window.draw(scoreRight);
 			window.draw(fpsText);
 
+			bool showMessages = true;
 			switch (state)
 			{
 			case State::Start:
 				largeMessage.setString("Welcome to Pong!");
 				smallMessage.setString("Press Enter to begin");
-				largeMessage.setPosition(
-					{(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
-				smallMessage.setPosition(
-					{(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
-				window.draw(largeMessage);
-				window.draw(smallMessage);
 				break;
 			case State::Serve:
-				largeMessage.setString("Player " + std::to_string(servingPlayer) + "'s serve!");
+				largeMessage.setString("Player " + std::to_string(static_cast<int>(servingPlayer)) + "'s serve!");
 				smallMessage.setString("Press Enter to serve");
+				break;
+			case State::Play:
+				showMessages = false;
+				break;
+			case State::Done:
+				largeMessage.setString("Player " + std::to_string(static_cast<int>(winningPlayer)) + " wins!");
+				smallMessage.setString("Press Enter to restart");
+				break;
+			}
+			if (showMessages)
+			{
 				largeMessage.setPosition(
 					{(Constants::VIRTUAL_WIDTH - largeMessage.getLocalBounds().size.x) / 2.f, 9.f});
 				smallMessage.setPosition(
 					{(Constants::VIRTUAL_WIDTH - smallMessage.getLocalBounds().size.x) / 2.f, 27.f});
 				window.draw(largeMessage);
 				window.draw(smallMessage);
-				break;
-			case State::Play:
-				break;
 			}
-
 			window.display();
 		};
 

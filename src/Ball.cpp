@@ -6,12 +6,12 @@ Ball::Ball(float x, float y, float width, float height) : x(x), y(y), width(widt
 {
 }
 
-void Ball::reset(int servingPlayer)
+void Ball::reset(Player servingPlayer)
 {
 	x = Constants::VIRTUAL_WIDTH / 2.f - width / 2.f;
 	y = Constants::VIRTUAL_HEIGHT / 2.f - height / 2.f;
 	std::uniform_real_distribution<float> randDY(-50.f, 50.f);
-	dx = (servingPlayer == 1) ? 100.f : -100.f;
+	dx = (servingPlayer == Player::One) ? 100.f : -100.f;
 	dy = randDY(Random::rng());
 }
 
