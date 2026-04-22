@@ -98,6 +98,27 @@ int main()
 						}
 					}
 				}
+				if (const auto *resized = event->getIf<sf::Event::Resized>())
+				{
+					const float windowAspect = static_cast<float>(resized->size.x) / resized->size.y;
+					const float virtualAspect = Constants::VIRTUAL_WIDTH / Constants::VIRTUAL_HEIGHT;
+
+					sf::FloatRect viewport;
+					if (windowAspect > virtualAspect)
+					{
+						const float ratio = virtualAspect / windowAspect;
+						viewport = sf::FloatRect({(1.f - ratio) / 2.f, 0.f}, {ratio, 1.f});
+					}
+					else
+					{
+						const float ratio = windowAspect / virtualAspect;
+						viewport = sf::FloatRect({0.f, (1.f - ratio) / 2.f}, {1.f, ratio});
+					}
+
+					sf::View view = window.getView();
+					view.setViewport(viewport);
+					window.setView(view);
+				}
 			}
 		};
 
